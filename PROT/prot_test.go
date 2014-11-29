@@ -1,8 +1,17 @@
 package main
 
-import "testing"
+import (
+	"bytes"
+	"testing"
+)
 
 func TestProt(t *testing.T) {
 	input := "AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA"
-	output := "MAMAPRTEINSTRING"
+	expected := "MAMAPRTEINSTRING"
+	inBuf := bytes.NewBufferString(input)
+	outBuf := bytes.Buffer{}
+	prot(inBuf, &outBuf)
+	if outBuf.String() != expected {
+		t.Errorf("expected %v got %v", expected, outBuf.String())
+	}
 }

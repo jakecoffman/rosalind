@@ -40,8 +40,8 @@ func main() {
 }
 
 // custom scanner that transforms RNA to Protien on the fly
-func ScanRNAtoProt(data []byte, atEOF bool) (advance int, token []byte, err error) {
-	if atEOF && len(data) < 3 {
+func scanRNAtoProt(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF || len(data) < 3 {
 		return 0, nil, nil
 	}
 	rna := string(data[0:3])
@@ -54,9 +54,13 @@ func ScanRNAtoProt(data []byte, atEOF bool) (advance int, token []byte, err erro
 
 func prot(r io.Reader, w io.Writer) error {
 	scanner := bufio.NewScanner(r)
-	scanner.Split(ScanRNAtoProt)
+	scanner.Split(scanRNAtoProt)
 	for scanner.Scan() {
-		w.Write(scanner.Bytes())
+		byts := scanner.Bytes()
+		if string(byts) == "Stop" {
+			return scanner.Err()
+		}
+		w.Write(byts)
 	}
 	return scanner.Err()
 }
